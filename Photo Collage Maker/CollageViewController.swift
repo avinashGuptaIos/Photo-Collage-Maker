@@ -86,6 +86,13 @@ extension CollageViewController: UIDropInteractionDelegate
                     self?.canvasView.addSubview(imageView)
                     imageView.frame = CGRect(x: 0, y: 0, width: (self?.canvasView.frame.width)! * 0.5, height: (self?.canvasView.frame.height)! * 0.3)
                     
+                    //------------We can apply the scaling, rotation to individual image by selecting them, but for now, i am doing it just for reference like this, later on we can give the feature to select the image from list & then apply scaling, rotation. ------//
+                    var transform = CGAffineTransform.identity
+                    transform = transform.rotated(by: CGFloat.pi/3)
+                    transform = transform.scaledBy(x: 0.8, y: 0.8)
+                    imageView.transform = transform
+                    //-------------------------------------------------//
+                    
                     let centerPoint = session.location(in: (self?.canvasView)!)
                     imageView.center = centerPoint
                 }
