@@ -77,14 +77,7 @@ extension CollageViewController: UIDropInteractionDelegate
                 guard let draggedImage = obj as? UIImage else { return }
                 
                 DispatchQueue.main.async { [weak self] in
-                    let imageView = UIImageView(image: draggedImage)
-                    imageView.isUserInteractionEnabled = true
-                    imageView.layer.borderWidth = 4
-                    imageView.layer.borderColor = UIColor.black.cgColor
-                    imageView.layer.shadowRadius = 5
-                    imageView.layer.shadowOpacity = 0.3
-                    self?.canvasView.addSubview(imageView)
-                    imageView.frame = CGRect(x: 0, y: 0, width: (self?.canvasView.frame.width)! * 0.5, height: (self?.canvasView.frame.height)! * 0.3)
+                    guard let imageView = self?.createImageViewAndAddItOnCanvas(image: draggedImage) else {return}
                     
                     //------------We can apply the scaling, rotation to individual image by selecting them, but for now, i am doing it just for reference like this, later on we can give the feature to select the image from list & then apply scaling, rotation. ------//
                     var transform = CGAffineTransform.identity
@@ -120,14 +113,7 @@ extension CollageViewController {
             guard let imagesList = images else { return }
             DispatchQueue.main.async {
                 for image in imagesList {
-                    let imageView = UIImageView(image: image)
-                    imageView.isUserInteractionEnabled = true
-                    imageView.layer.borderWidth = 4
-                    imageView.layer.borderColor = UIColor.black.cgColor
-                    imageView.layer.shadowRadius = 5
-                    imageView.layer.shadowOpacity = 0.3
-                    self?.canvasView.addSubview(imageView)
-                    imageView.frame = CGRect(x: CGFloat.random(in: 0 ... (self?.canvasView.frame.width)! * 0.5), y: CGFloat.random(in: 0 ... (self?.canvasView.frame.height)! * 0.7), width: (self?.canvasView.frame.width)! * 0.5 , height: (self?.canvasView.frame.height)! * 0.3)
+                    self?.createImageViewAndAddItOnCanvas(image: image)
                 }
             }
         }
@@ -141,4 +127,38 @@ extension CollageViewController {
         UIGraphicsEndImageContext()
         ImageBackupSharedInstance.exportToUsersPhotoAlbum(image: image)
     }
+
+    @discardableResult
+    func createImageViewAndAddItOnCanvas(image: UIImage) -> UIImageView {
+        let imageView = UIImageView(image: image)
+        imageView.isUserInteractionEnabled = true
+        imageView.layer.borderWidth = 4
+        imageView.layer.borderColor = UIColor.black.cgColor
+        imageView.layer.shadowRadius = 5
+        imageView.layer.shadowOpacity = 0.3
+        canvasView.addSubview(imageView)
+        imageView.frame = CGRect(x: CGFloat.random(in: 0 ... (canvasView.frame.width) * 0.5), y: CGFloat.random(in: 0 ... (canvasView.frame.height) * 0.7), width: (canvasView.frame.width) * 0.5 , height: (canvasView.frame.height) * 0.3)
+        
+        addTapGestureOnView(view: imageView)
+        
+        return imageView
+    }
+    
+    func addTapGestureOnView(view: UIView){
+        //-----------Add tap gesture-------------------//
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(CollageViewController.imageViewTapped(_:)))
+        tapGesture.numberOfTapsRequired = 1
+        tapGesture.numberOfTouchesRequired = 1
+        view.addGestureRecognizer(tapGesture)
+        //--------------------------------------------//
+    }
+    
+    @objc func imageViewTapped(_ sender: UITapGestureRecognizer) {
+
+    if canvasView.backgroundColor == UIColor.yellow {
+        canvasView.backgroundColor = UIColor.green
+    }else{
+        canvasView.backgroundColor = UIColor.yellow
+    }
+}
 }
