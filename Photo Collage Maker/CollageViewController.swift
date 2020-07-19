@@ -13,11 +13,10 @@ class CollageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         self.title = "Photo Collage Maker"
         addLeftButton(withTitle: "Add")
         addRightButton(withTitle: "Export")
-//        canvasView.addInteraction(UIDropInteraction(delegate: self))
+        canvasView.addInteraction(UIDropInteraction(delegate: self))
         let dragInteraction = UIDragInteraction(delegate: self)
         dragInteraction.isEnabled = true
         canvasView.addInteraction(dragInteraction)
@@ -57,16 +56,12 @@ extension CollageViewController: UIDragInteractionDelegate {
         }
     }
     
-    func dragInteraction(_ interaction: UIDragInteraction, item: UIDragItem, willAnimateCancelWith animator: UIDragAnimating) {
-        canvasView.addSubview(item.localObject as! UIView)
-    }
-    
     func dragInteraction(_ interaction: UIDragInteraction, previewForLifting item: UIDragItem, session: UIDragSession) -> UITargetedDragPreview? {
         return UITargetedDragPreview(view: item.localObject as! UIView)
     }
 }
 
-/*
+
 //MARK: UIDropInteractionDelegate
 extension CollageViewController: UIDropInteractionDelegate
 {
@@ -89,7 +84,7 @@ extension CollageViewController: UIDropInteractionDelegate
                     imageView.layer.shadowRadius = 5
                     imageView.layer.shadowOpacity = 0.3
                     self?.canvasView.addSubview(imageView)
-                    imageView.frame = CGRect(x: 0, y: 0, width: draggedImage.size.width, height: draggedImage.size.height)
+                    imageView.frame = CGRect(x: 0, y: 0, width: (self?.canvasView.frame.width)! * 0.5, height: (self?.canvasView.frame.height)! * 0.3)
                     
                     let centerPoint = session.location(in: (self?.canvasView)!)
                     imageView.center = centerPoint
@@ -107,35 +102,36 @@ extension CollageViewController: UIDropInteractionDelegate
         return session.canLoadObjects(ofClass: UIImage.self)
     }
     
-} */
+}
 
 //MARK: Navigation Bar Button Actions
 extension CollageViewController {
     
-       @objc override func leftButtonAction() {
+    @objc override func leftButtonAction() {
         super.leftButtonAction()
         ImagePickerInstance.openImageVideoPicker(self) { [weak self] (images) in
             guard let imagesList = images else { return }
             DispatchQueue.main.async {
                 for image in imagesList {
-                let imageView = UIImageView(image: image)
-                imageView.isUserInteractionEnabled = true
-                imageView.layer.borderWidth = 4
-                imageView.layer.borderColor = UIColor.black.cgColor
-                imageView.layer.shadowRadius = 5
-                imageView.layer.shadowOpacity = 0.3
-                self?.canvasView.addSubview(imageView)
-                    imageView.frame = CGRect(x: 0, y: 0, width: (self?.canvasView.frame.width)! * 0.5 , height: (self?.canvasView.frame.height)! * 0.3)
-                 
-//                let centerPoint = session.location(in: (self?.canvasView)!)
-//                imageView.center = centerPoint
+                    let imageView = UIImageView(image: image)
+                    imageView.isUserInteractionEnabled = true
+                    imageView.layer.borderWidth = 4
+                    imageView.layer.borderColor = UIColor.black.cgColor
+                    imageView.layer.shadowRadius = 5
+                    imageView.layer.shadowOpacity = 0.3
+                    self?.canvasView.addSubview(imageView)
+                    imageView.frame = CGRect(x: CGFloat.random(in: 0 ... (self?.canvasView.frame.width)! * 0.5), y: CGFloat.random(in: 0 ... (self?.canvasView.frame.height)! * 0.7), width: (self?.canvasView.frame.width)! * 0.5 , height: (self?.canvasView.frame.height)! * 0.3)
                 }
             }
         }
-       }
-       
-       @objc override func rightButtonAction() {
+    }
+    
+    @objc override func rightButtonAction() {
         super.rightButtonAction()
-        print("rightButtonAction called")
-       }
+        UIGraphicsBeginImageContext(canvasView.frame.size)
+        canvasView.layer.render(in: UIGraphicsGetCurrentContext()!)
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else { return }
+        UIGraphicsEndImageContext()
+        ImageBackupSharedInstance.exportToUsersPhotoAlbum(image: image)
+    }
 }

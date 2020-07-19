@@ -43,7 +43,7 @@
         <!--Navigation Controller-->
         <scene sceneID="9hf-is-ryr">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="tYa-AT-PVY" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NavigationController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="tYa-AT-PVY" customClass="NavigationController" customModule="Photo_Collage_Maker" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="9uu-2S-m7k">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>

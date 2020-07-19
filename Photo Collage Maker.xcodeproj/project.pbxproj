@@ -10,6 +10,8 @@
 		498C4DC9F965450C12530CC0 /* Pods_Photo_Collage_Maker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F308953B811684044CFE64B /* Pods_Photo_Collage_Maker.framework */; };
 		AE9241FE24C4168700CD1E5C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9241FD24C4168700CD1E5C /* Extensions.swift */; };
 		AE92420024C41E5500CD1E5C /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9241FF24C41E5500CD1E5C /* ImagePicker.swift */; };
+		AE92420224C4741000CD1E5C /* ImageBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE92420124C4741000CD1E5C /* ImageBackup.swift */; };
+		AE92420424C477A700CD1E5C /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE92420324C477A700CD1E5C /* NavigationController.swift */; };
 		AEC3B71724C3F0FD0034D272 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC3B71624C3F0FD0034D272 /* AppDelegate.swift */; };
 		AEC3B71924C3F0FD0034D272 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC3B71824C3F0FD0034D272 /* SceneDelegate.swift */; };
 		AEC3B71B24C3F0FD0034D272 /* CollageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC3B71A24C3F0FD0034D272 /* CollageViewController.swift */; };
@@ -24,6 +26,8 @@
 		9F308953B811684044CFE64B /* Pods_Photo_Collage_Maker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Photo_Collage_Maker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE9241FD24C4168700CD1E5C /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		AE9241FF24C41E5500CD1E5C /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		AE92420124C4741000CD1E5C /* ImageBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBackup.swift; sourceTree = "<group>"; };
+		AE92420324C477A700CD1E5C /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		AEC3B71324C3F0FD0034D272 /* Photo Collage Maker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Photo Collage Maker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEC3B71624C3F0FD0034D272 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AEC3B71824C3F0FD0034D272 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -60,6 +64,7 @@
 			children = (
 				AE9241FD24C4168700CD1E5C /* Extensions.swift */,
 				AE9241FF24C41E5500CD1E5C /* ImagePicker.swift */,
+				AE92420124C4741000CD1E5C /* ImageBackup.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -87,6 +92,7 @@
 			children = (
 				AEC3B71624C3F0FD0034D272 /* AppDelegate.swift */,
 				AEC3B71824C3F0FD0034D272 /* SceneDelegate.swift */,
+				AE92420324C477A700CD1E5C /* NavigationController.swift */,
 				AEC3B71A24C3F0FD0034D272 /* CollageViewController.swift */,
 				AE9241FC24C4163F00CD1E5C /* Helpers */,
 				AEC3B71C24C3F0FD0034D272 /* Main.storyboard */,
@@ -223,7 +229,9 @@
 				AEC3B71B24C3F0FD0034D272 /* CollageViewController.swift in Sources */,
 				AEC3B71724C3F0FD0034D272 /* AppDelegate.swift in Sources */,
 				AE92420024C41E5500CD1E5C /* ImagePicker.swift in Sources */,
+				AE92420224C4741000CD1E5C /* ImageBackup.swift in Sources */,
 				AEC3B71924C3F0FD0034D272 /* SceneDelegate.swift in Sources */,
+				AE92420424C477A700CD1E5C /* NavigationController.swift in Sources */,
 				AE9241FE24C4168700CD1E5C /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
