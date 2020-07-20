@@ -30,16 +30,16 @@ class CollageViewController: UIViewController {
     
     //MARK: Setup types of Image Filter
     @IBAction func filterButtonAction(_ sender: UIButton) {
-        let ac = UIAlertController(title: "Choose filter", message: nil, preferredStyle: .actionSheet)
-        ac.addAction(UIAlertAction(title: "CIBumpDistortion", style: .default, handler: setFilter))
-        ac.addAction(UIAlertAction(title: "CIGaussianBlur", style: .default, handler: setFilter))
-        ac.addAction(UIAlertAction(title: "CIPixellate", style: .default, handler: setFilter))
-        ac.addAction(UIAlertAction(title: "CISepiaTone", style: .default, handler: setFilter))
-        ac.addAction(UIAlertAction(title: "CITwirlDistortion", style: .default, handler: setFilter))
-        ac.addAction(UIAlertAction(title: "CIUnsharpMask", style: .default, handler: setFilter))
-        ac.addAction(UIAlertAction(title: "CIVignette", style: .default, handler: setFilter))
-        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        present(ac, animated: true)
+        let alertController = UIAlertController(title: "Choose filter", message: nil, preferredStyle: .actionSheet)
+        alertController.addAction(UIAlertAction(title: "CIBumpDistortion", style: .default, handler: setFilter))
+        alertController.addAction(UIAlertAction(title: "CIGaussianBlur", style: .default, handler: setFilter))
+        alertController.addAction(UIAlertAction(title: "CIPixellate", style: .default, handler: setFilter))
+        alertController.addAction(UIAlertAction(title: "CISepiaTone", style: .default, handler: setFilter))
+        alertController.addAction(UIAlertAction(title: "CITwirlDistortion", style: .default, handler: setFilter))
+        alertController.addAction(UIAlertAction(title: "CIUnsharpMask", style: .default, handler: setFilter))
+        alertController.addAction(UIAlertAction(title: "CIVignette", style: .default, handler: setFilter))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        present(alertController, animated: true)
     }
     
     
@@ -100,14 +100,6 @@ extension CollageViewController: UIDropInteractionDelegate
                 
                 DispatchQueue.main.async { [weak self] in
                     guard let imageView = self?.createImageViewAndAddItOnCanvas(image: draggedImage) else {return}
-                    
-                    //------------We can apply the scaling, rotation to individual image by selecting them, but for now, i am doing it just for reference like this, later on we can give the feature to select the image from list & then apply scaling, rotation. ------//
-                    var transform = CGAffineTransform.identity
-                    transform = transform.rotated(by: CGFloat.pi/3)
-                    transform = transform.scaledBy(x: 0.8, y: 0.8)
-                    imageView.transform = transform
-                    //-------------------------------------------------//
-                    
                     let centerPoint = session.location(in: (self?.canvasView)!)
                     imageView.center = centerPoint
                 }
@@ -165,29 +157,95 @@ extension CollageViewController {
         canvasView.addSubview(imageView)
         imageView.frame = CGRect(x: CGFloat.random(in: 0 ... (canvasView.frame.width) * 0.5), y: CGFloat.random(in: 0 ... (canvasView.frame.height) * 0.7), width: (canvasView.frame.width) * 0.5 , height: (canvasView.frame.height) * 0.3)
         
-        addTapGestureOnView(view: imageView)
+        addGesturesOnView(view: imageView)
         
         return imageView
     }
     
-    func addTapGestureOnView(view: UIView){
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(CollageViewController.imageViewTapped(_:)))
+    func addGesturesOnView(view: UIView){
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageViewTappedForImageProcessing(_:)))
         tapGesture.numberOfTapsRequired = 1
         tapGesture.numberOfTouchesRequired = 1
         view.addGestureRecognizer(tapGesture)
+        
+        let rotateGesture = UIRotationGestureRecognizer(target: self, action: #selector(imageViewRotationForRotationEffect(_:)))
+        view.addGestureRecognizer(rotateGesture)
+        
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(imageViewPinchForScalingEffect(_:)))
+          view.addGestureRecognizer(pinchGesture)
+        
+        let swipeRightGesture = UISwipeGestureRecognizer(target: self, action: #selector(imageViewSwipeForAddingText(_:)))
+        let swipeLeftGesture = UISwipeGestureRecognizer(target: self, action: #selector(imageViewSwipeForAddingText(_:)))
+        swipeRightGesture.direction = .right
+        swipeLeftGesture.direction = .left
+        view.addGestureRecognizer(swipeRightGesture)
+        view.addGestureRecognizer(swipeLeftGesture)
     }
     
-    @objc func imageViewTapped(_ sender: UITapGestureRecognizer) {
-        if let gestureAttachedView = sender.view, let imageView = gestureAttachedView as? UIImageView
+    //MARK: Gestures Action
+
+    @objc func imageViewTappedForImageProcessing(_ sender: UITapGestureRecognizer) {
+        if let gestureAttachedView = sender.view,
+            let imageView = gestureAttachedView as? UIImageView
         {
             let customView = CustomPopOverView(frame: CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: CGSize(width: 150.0, height: 100.0)), selectedFilter: currentFilter, handlingView: gestureAttachedView)
             customView.delegate = self
             customView.showPopover(sourceView: gestureAttachedView)
-            
+
             let beginImage = CIImage(image: imageView.image!)
             currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
-            
+
             applyProcessing(imageView: imageView)
+        }
+    }
+    
+    @objc func imageViewRotationForRotationEffect(_ sender: UIRotationGestureRecognizer) {
+        if let gestureAttachedView = sender.view,
+            sender.state == .changed
+        {
+            let transform = CGAffineTransform(rotationAngle: sender.rotation)
+            gestureAttachedView.transform = transform
+        }
+    }
+    
+    @objc func imageViewPinchForScalingEffect(_ sender: UIPinchGestureRecognizer) {
+        if let gestureAttachedView = sender.view,
+            sender.state == .changed
+        {
+            let transform = CGAffineTransform(scaleX: sender.scale, y: sender.scale)
+            gestureAttachedView.transform = transform
+        }
+    }
+    
+    @objc func imageViewSwipeForAddingText(_ sender: UISwipeGestureRecognizer) {
+        if let gestureAttachedView = sender.view,
+        sender.direction == .right || sender.direction == .left  {
+            let alertController = UIAlertController(title: "Enter your text", message: nil, preferredStyle: .alert)
+            alertController.addTextField()
+
+            let okAction = UIAlertAction(title: "Ok", style: .default) { _ in
+                if let text = alertController.textFields![0].text,
+                text.count > 0 {
+                  _ = gestureAttachedView.subviews.map{$0.removeFromSuperview()}
+                let label = UILabel()
+                label.textColor = .white
+                label.textAlignment = .center
+                label.font = .boldSystemFont(ofSize: 12)
+                label.text = text
+                gestureAttachedView.addSubview(label)
+                gestureAttachedView.addConstraints("H:|-[v0]-|", constraintViews: [label])
+                gestureAttachedView.addConstraints("V:|-[v0]-|", constraintViews: [label])
+                }
+            }
+
+            alertController.addAction(okAction)
+            if let label = gestureAttachedView.subviews.first as? UILabel, label.text!.count > 0 {
+                alertController.addAction(UIAlertAction(title: "Remove text", style: .cancel){ _ in
+                    _ = gestureAttachedView.subviews.map{$0.removeFromSuperview()}
+                })
+            }
+            
+            present(alertController, animated: true)
         }
     }
     
