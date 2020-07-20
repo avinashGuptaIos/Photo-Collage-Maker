@@ -7,9 +7,13 @@
 //
 
 import UIKit
+import CoreImage
 
 class CollageViewController: UIViewController {
     @IBOutlet weak var canvasView: UIView!
+    @IBOutlet weak var filterButtonOutlet: UIButton!
+    var currentFilter: CIFilter!
+    let context = CIContext()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,9 +24,27 @@ class CollageViewController: UIViewController {
         let dragInteraction = UIDragInteraction(delegate: self)
         dragInteraction.isEnabled = true
         canvasView.addInteraction(dragInteraction)
+        currentFilter = CIFilter(name: "CIBumpDistortion")
+    }
+    
+    @IBAction func filterButtonAction(_ sender: UIButton) {
+        let ac = UIAlertController(title: "Choose filter", message: nil, preferredStyle: .actionSheet)
+        ac.addAction(UIAlertAction(title: "CIBumpDistortion", style: .default, handler: setFilter))
+        ac.addAction(UIAlertAction(title: "CIGaussianBlur", style: .default, handler: setFilter))
+        ac.addAction(UIAlertAction(title: "CIPixellate", style: .default, handler: setFilter))
+        ac.addAction(UIAlertAction(title: "CISepiaTone", style: .default, handler: setFilter))
+        ac.addAction(UIAlertAction(title: "CITwirlDistortion", style: .default, handler: setFilter))
+        ac.addAction(UIAlertAction(title: "CIUnsharpMask", style: .default, handler: setFilter))
+        ac.addAction(UIAlertAction(title: "CIVignette", style: .default, handler: setFilter))
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        present(ac, animated: true)
     }
     
     
+    func setFilter(action: UIAlertAction) {
+        filterButtonOutlet.setTitle(action.title, for: .normal)
+        currentFilter = CIFilter(name: action.title!)
+    }
 }
 
 
@@ -127,7 +149,7 @@ extension CollageViewController {
         UIGraphicsEndImageContext()
         ImageBackupSharedInstance.exportToUsersPhotoAlbum(image: image)
     }
-
+    
     @discardableResult
     func createImageViewAndAddItOnCanvas(image: UIImage) -> UIImageView {
         let imageView = UIImageView(image: image)
@@ -154,11 +176,40 @@ extension CollageViewController {
     }
     
     @objc func imageViewTapped(_ sender: UITapGestureRecognizer) {
-
-    if canvasView.backgroundColor == UIColor.yellow {
-        canvasView.backgroundColor = UIColor.green
-    }else{
-        canvasView.backgroundColor = UIColor.yellow
+        if let gestureAttachedView = sender.view, let imageView = gestureAttachedView as? UIImageView
+        {
+            let customView = CustomPopOverView(frame: CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: CGSize(width: 150.0, height: 100.0)), selectedFilter: currentFilter, handlingView: gestureAttachedView)
+            customView.delegate = self
+            customView.showPopover(sourceView: gestureAttachedView)
+            
+            let beginImage = CIImage(image: imageView.image!)
+            currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
+            
+            applyProcessing(imageView: imageView)
+        }
+    }
+    
+    func applyProcessing(value: Float = 0, imageView: UIImageView) {
+        
+        guard let currentImage = imageView.image else { return }
+        let inputKeys = currentFilter.inputKeys
+        
+        if inputKeys.contains(kCIInputIntensityKey) { currentFilter.setValue(value, forKey: kCIInputIntensityKey) }
+        if inputKeys.contains(kCIInputRadiusKey) { currentFilter.setValue(value * 200, forKey: kCIInputRadiusKey) }
+        if inputKeys.contains(kCIInputScaleKey) { currentFilter.setValue(value * 10, forKey: kCIInputScaleKey) }
+        if inputKeys.contains(kCIInputCenterKey) { currentFilter.setValue(CIVector(x: currentImage.size.width / 2, y: currentImage.size.height / 2), forKey: kCIInputCenterKey) }
+        
+        if let cgimg = context.createCGImage(currentFilter.outputImage!, from: currentFilter.outputImage!.extent) {
+            let processedImage = UIImage(cgImage: cgimg)
+            imageView.image = processedImage
+        }
     }
 }
+
+extension CollageViewController: CustomPopOverViewDelegate{
+    func sliderValueDidChange(sender: UISlider!, handlingView: UIView) {
+        if let imageView = handlingView as? UIImageView {
+            applyProcessing(value: sender.value, imageView: imageView)
+        }
+    }
 }

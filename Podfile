@@ -7,5 +7,6 @@ target 'Photo Collage Maker' do
 
   # Pods for Photo Collage Maker
   pod 'YPImagePicker', '~> 4.0.0'
-
+  pod 'KUIPopOver'
+  
 end
