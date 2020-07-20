@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 
+//MARK: UIViewController methods
 extension UIViewController {
     
     func addLeftButton(withTitle leftButtonTitle: String) {
@@ -29,4 +30,17 @@ extension UIViewController {
     @objc func rightButtonAction() {
         
     }
+}
+
+//MARK: UIView Methods
+extension UIView{
+    func addConstraints(_ format: String, constraintViews: [UIView]) {
+         var viewsDictionary = [String: Any]()
+         for view: UIView in constraintViews {
+             let key = "v\((constraintViews as NSArray).index(of: view))"
+             view.translatesAutoresizingMaskIntoConstraints = false
+             viewsDictionary[key] = view
+         }
+         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: format, options: [], metrics: nil, views: viewsDictionary))
+     }
 }

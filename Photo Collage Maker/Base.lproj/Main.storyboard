@@ -16,17 +16,27 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uFT-3d-DmG">
-                                <rect key="frame" x="57" y="137.5" width="300" height="533"/>
+                                <rect key="frame" x="57" y="113.5" width="300" height="533"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="uFT-3d-DmG" secondAttribute="height" multiplier="9:16" id="33q-Zf-6Kf"/>
                                     <constraint firstAttribute="width" constant="300" id="Ada-sO-aCh"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r0P-jV-tWa">
+                                <rect key="frame" x="20" y="736" width="374" height="30"/>
+                                <state key="normal" title="Select Filter"/>
+                                <connections>
+                                    <action selector="filterButtonAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bze-x3-tOx"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.77647058820000003" green="0.77647058820000003" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="uFT-3d-DmG" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="3y2-eT-Lsv"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="r0P-jV-tWa" secondAttribute="trailing" constant="20" id="2vO-hr-orw"/>
+                            <constraint firstItem="uFT-3d-DmG" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-24" id="3y2-eT-Lsv"/>
+                            <constraint firstItem="r0P-jV-tWa" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="YX4-uA-SOV"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="r0P-jV-tWa" secondAttribute="bottom" constant="8" id="YzT-nG-ctr"/>
                             <constraint firstItem="uFT-3d-DmG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ukp-NO-cVA"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -34,6 +44,7 @@
                     <navigationItem key="navigationItem" id="XnP-Uh-A6u"/>
                     <connections>
                         <outlet property="canvasView" destination="uFT-3d-DmG" id="Eq6-BK-ax7"/>
+                        <outlet property="filterButtonOutlet" destination="r0P-jV-tWa" id="jUT-pS-7H1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
