@@ -25,8 +25,10 @@ class CollageViewController: UIViewController {
         dragInteraction.isEnabled = true
         canvasView.addInteraction(dragInteraction)
         currentFilter = CIFilter(name: "CIBumpDistortion")
+        filterButtonOutlet.setTitle(currentFilter.name, for: .normal)
     }
     
+    //MARK: Setup types of Image Filter
     @IBAction func filterButtonAction(_ sender: UIButton) {
         let ac = UIAlertController(title: "Choose filter", message: nil, preferredStyle: .actionSheet)
         ac.addAction(UIAlertAction(title: "CIBumpDistortion", style: .default, handler: setFilter))
@@ -54,9 +56,7 @@ extension CollageViewController: UIDragInteractionDelegate {
     func dragInteraction(_ interaction: UIDragInteraction, itemsForBeginning session: UIDragSession) -> [UIDragItem] {
         let touchedPoint = session.location(in: canvasView)
         if let touchedImageView = canvasView.hitTest(touchedPoint, with: nil) as? UIImageView {
-            
             let touchedImage = touchedImageView.image
-            
             let itemProvider = NSItemProvider(object: touchedImage!)
             let dragItem = UIDragItem(itemProvider: itemProvider)
             dragItem.localObject = touchedImageView
@@ -95,7 +95,7 @@ extension CollageViewController: UIDropInteractionDelegate
                     print("Failed to load our dragged item:", err)
                     return
                 }
-                
+
                 guard let draggedImage = obj as? UIImage else { return }
                 
                 DispatchQueue.main.async { [weak self] in
@@ -149,6 +149,10 @@ extension CollageViewController {
         UIGraphicsEndImageContext()
         ImageBackupSharedInstance.exportToUsersPhotoAlbum(image: image)
     }
+}
+
+//MARK: Some Common Methods
+extension CollageViewController {
     
     @discardableResult
     func createImageViewAndAddItOnCanvas(image: UIImage) -> UIImageView {
@@ -167,12 +171,10 @@ extension CollageViewController {
     }
     
     func addTapGestureOnView(view: UIView){
-        //-----------Add tap gesture-------------------//
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(CollageViewController.imageViewTapped(_:)))
         tapGesture.numberOfTapsRequired = 1
         tapGesture.numberOfTouchesRequired = 1
         view.addGestureRecognizer(tapGesture)
-        //--------------------------------------------//
     }
     
     @objc func imageViewTapped(_ sender: UITapGestureRecognizer) {
@@ -190,22 +192,27 @@ extension CollageViewController {
     }
     
     func applyProcessing(value: Float = 0, imageView: UIImageView) {
-        
         guard let currentImage = imageView.image else { return }
-        let inputKeys = currentFilter.inputKeys
-        
-        if inputKeys.contains(kCIInputIntensityKey) { currentFilter.setValue(value, forKey: kCIInputIntensityKey) }
-        if inputKeys.contains(kCIInputRadiusKey) { currentFilter.setValue(value * 200, forKey: kCIInputRadiusKey) }
-        if inputKeys.contains(kCIInputScaleKey) { currentFilter.setValue(value * 10, forKey: kCIInputScaleKey) }
-        if inputKeys.contains(kCIInputCenterKey) { currentFilter.setValue(CIVector(x: currentImage.size.width / 2, y: currentImage.size.height / 2), forKey: kCIInputCenterKey) }
-        
-        if let cgimg = context.createCGImage(currentFilter.outputImage!, from: currentFilter.outputImage!.extent) {
-            let processedImage = UIImage(cgImage: cgimg)
-            imageView.image = processedImage
+        DispatchQueue.global().async { [weak self] in
+            let inputKeys = self?.currentFilter.inputKeys
+            
+            if inputKeys?.contains(kCIInputIntensityKey) ?? false { self?.currentFilter.setValue(value, forKey: kCIInputIntensityKey) }
+            if inputKeys?.contains(kCIInputRadiusKey) ?? false { self?.currentFilter.setValue(value * 200, forKey: kCIInputRadiusKey) }
+            if inputKeys?.contains(kCIInputScaleKey) ?? false { self?.currentFilter.setValue(value * 10, forKey: kCIInputScaleKey) }
+            if inputKeys?.contains(kCIInputCenterKey) ?? false { self?.currentFilter.setValue(CIVector(x: currentImage.size.width / 2, y: currentImage.size.height / 2), forKey: kCIInputCenterKey) }
+            
+            if let outputImage = self?.currentFilter.outputImage ,
+                let cgimg = self?.context.createCGImage(outputImage, from: outputImage.extent) {
+                let processedImage = UIImage(cgImage: cgimg)
+                DispatchQueue.main.async {
+                    imageView.image = processedImage
+                }
+            }
         }
     }
 }
 
+//MARK: CustomPopOverViewDelegate
 extension CollageViewController: CustomPopOverViewDelegate{
     func sliderValueDidChange(sender: UISlider!, handlingView: UIView) {
         if let imageView = handlingView as? UIImageView {

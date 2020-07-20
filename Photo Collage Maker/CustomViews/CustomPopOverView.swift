@@ -51,7 +51,7 @@ class CustomPopOverView: UIView, KUIPopOverUsable {
         
         let slider = UISlider()
         slider.minimumValue = 0
-        slider.maximumValue = 100
+        slider.maximumValue = 10
         slider.isContinuous = true
         slider.tintColor = UIColor.blue
         slider.value = 0
